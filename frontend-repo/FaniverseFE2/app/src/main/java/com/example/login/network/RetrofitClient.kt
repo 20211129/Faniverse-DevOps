@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
     private var retrofit: Retrofit? = null
-    private const val BASE_URL = "https://faniversebe.onrender.com/" // 로컬에서 실행할 때 서버 주소: http://10.0.2.2:8080/
+    private const val BASE_URL = "http://34.47.110.219:80/" // 로컬에서 실행할 때 서버 주소: http://10.0.2.2:8080/
 
     private val cookieJar = object : CookieJar {
         private val cookies = mutableListOf<Cookie>()
