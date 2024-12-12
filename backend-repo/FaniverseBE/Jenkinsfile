@@ -32,7 +32,6 @@ pipeline {
                 dir('backend-repo/FaniverseBE') {
                     sh 'chmod +x gradlew'
                     sh './gradlew clean build'
-		    sh 'ls -al build/libs' // 빌드 결과 확인
                 }
             }
         }
@@ -69,15 +68,14 @@ pipeline {
 	    steps {
                 script {
                     // 기존 컨테이너 삭제
-                    sh 'docker rm -f faniverse-backend-container || true'
+                    sh 'docker rm -f faniverse-con'
                     
-                    echo "Starting Docker container for backend..."
                     // Docker 컨테이너 실행
-	            sh 'docker run -d --name faniverse-backend-container -p 8081:8080 --env-file backend-repo/FaniverseBE/.env faniverse_backend:latest'
-		    sh 'docker exec faniverse-backend-container env'
+	            sh 'docker run -d --name faniverse-con -p 8081:8080 --env-file backend-repo/FaniverseBE/.env faniverse_backend:latest'
+
 		    sh 'sleep 5'
-		    sh 'docker ps -f name=faniverse-backend-container'
-		    sh 'docker logs faniverse-backend-container'
+		    sh 'docker ps -a'
+		    sh 'docker logs faniverse-con'
                     echo "Docker container for the backend is running successfully."
                 }
             }
@@ -106,6 +104,9 @@ pipeline {
         }
 	    
         stage('Deploy to Kubernetes') {
+	    when {
+	        branch 'main'
+	    }
             steps {
 		sh "sed -i 's/faniverse_backend:latest/faniverse_backend:${env.BUILD_ID}/g' backend-repo/FaniverseBE/deploy.yml"
 		step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, location: env.LOCATION, manifestPattern: 'backend-repo/FaniverseBE/deploy.yml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
