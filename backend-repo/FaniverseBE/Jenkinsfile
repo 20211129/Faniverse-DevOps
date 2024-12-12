@@ -74,8 +74,8 @@ pipeline {
 	            sh 'docker run -d --name faniverse-con -p 8081:8080 --env-file backend-repo/FaniverseBE/.env faniverse_backend:latest'
 
 		    sh 'sleep 5'
-		    sh 'docker ps -f name=faniverse-con'
-		    sh 'docker logs faniverse-backend-container'
+		    sh 'docker ps -a'
+		    sh 'docker logs faniverse-con'
                     echo "Docker container for the backend is running successfully."
                 }
             }
